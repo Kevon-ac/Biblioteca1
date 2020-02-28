@@ -3,6 +3,8 @@ import mysql.connector
 from tkinter import messagebox
 import custom_qr
 
+#probando github
+
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",
