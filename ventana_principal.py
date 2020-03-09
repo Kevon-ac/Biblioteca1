@@ -25,7 +25,7 @@ def centrar_ventana(ventana):
 root = Tk()
 root.title("Biblioteca Parra")
 root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='book.png'))
-root.geometry("250x300")
+root.geometry("272x200")
 centrar_ventana(root)
 
 
@@ -156,32 +156,53 @@ def prestamo():
 
     btn_agregar_usuario = Button(prestamo, text="Aceptar", command=buscar_usuario)
     btn_agregar_usuario.grid(row=4, column=1, padx=10, pady=10)
+
+def devolver():
+    #conectandome a la base de datos
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="bibliotecaparra"
+    )
+
+    mycursor = mydb.cursor()
+    
+    #abrir webcam y obtener id del libro con QR
+    text = custom_qr.qr_id()
+    idLibro = int(text)
+
+    #Actualizar la tabla
+    sql_command = """UPDATE prestamos 
+    SET estado = 'finalizado'
+    WHERE idLibro = %s"""
+    mycursor.execute(sql_command % idLibro)
+
+    mydb.commit()
+
+    messagebox.showinfo("Listo", "Prestamo finalizado")
     
 
 
 #Etiqueta "Bienvenido"
 var = StringVar()
-welcome = Label(root, textvariable=var, relief = FLAT, bd = 30, )
+welcome = Label(root, textvariable=var, relief = FLAT)
 var.set("Bienvenido")
-welcome.pack()
+welcome.grid(row=0, column=0, padx=10, pady=10)
 
-#Frame que contiene los botones
-frame = Frame(root)
-frame.pack()
-frame.config(bg = "blue")
-frame.config(width = "150", height = "150")
+bottom_frame = Frame(root, width=650, height=400, bg='lightblue')
+bottom_frame.grid(row=1, column=0, padx=10, pady=5, )
 
-bottomframe = Frame(root)
-bottomframe.pack(side = BOTTOM)
+prestamo_btn = Button(bottom_frame, text = "Prestar", command=prestamo)
+prestamo_btn.grid(row=1, column=0, padx=10, pady=10, ipadx=27)
 
-prestamo_btn = Button(frame, text = "Prestar", command=prestamo)
-prestamo_btn.pack(side = LEFT)
+devolucion_btn = Button(bottom_frame, text = "Devolver", command=devolver)
+devolucion_btn.grid(row=1, column=1, padx=10, pady=10, ipadx=27)
 
-devolucion_btn = Button(frame, text = "Devolver")
-devolucion_btn.pack(side = RIGHT)
+registro_btn = Button(bottom_frame, text = "Registrar Alumno", command=open_registro)
+registro_btn.grid(row=2, column=0, padx=10, pady=10)
 
-registro_btn = Button(frame, text = "Registrar Alumno", command=open_registro)
-registro_btn.pack(side = BOTTOM)
+
 
 
 
