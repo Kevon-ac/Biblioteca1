@@ -1,7 +1,11 @@
 from tkinter import *
+from tkinter import ttk
 import mysql.connector
 from tkinter import messagebox
 import custom_qr
+from ttkthemes import ThemedTk
+
+
 
 #probando github
 
@@ -22,11 +26,14 @@ def centrar_ventana(ventana):
     positionDown = int(ventana.winfo_screenheight()/3 - windowHeight/3)
     ventana.geometry("+{}+{}".format(positionRight, positionDown))
 
-root = Tk()
+root = ThemedTk(theme="breeze")
 root.title("Biblioteca Parra")
 root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='book.png'))
-root.geometry("272x200")
+root.geometry("305x200")
+root.config(bg="white")
 centrar_ventana(root)
+
+
 
 
 #Ventana para registrar usuario
@@ -57,7 +64,7 @@ def open_registro():
     registro = Toplevel()
     registro.title("Registrar Alumno")
     registro.tk.call('wm', 'iconphoto', registro._w, PhotoImage(file='book.png'))
-    registro.geometry("300x200+600+300")
+    registro.geometry("350x250+600+300")
     #centrar_ventana(registro)
 
     #Crear etiqueta titulo
@@ -70,17 +77,17 @@ def open_registro():
     lbl_fechaNacimiento = Label(registro, text="Fecha de Nacimiento").grid(row=3, column=0, sticky=W, padx=10)
 
     #Crear Cajas de entrada
-    tb_primer_nombre = Entry(registro)
+    tb_primer_nombre = ttk.Entry(registro)
     tb_primer_nombre.grid(row=1, column=1, pady=5)
 
-    tb_apellido = Entry(registro)
+    tb_apellido = ttk.Entry(registro)
     tb_apellido.grid(row=2, column=1, pady=5)
 
-    tb_fechaNacimiento = Entry(registro)
+    tb_fechaNacimiento = ttk.Entry(registro)
     tb_fechaNacimiento.grid(row=3,column=1, pady=5)
 
     #Crear Botones
-    btn_agregar_usuario = Button(registro, text="Agregar Usuario", command=agregar_usuario)
+    btn_agregar_usuario = ttk.Button(registro, text="Agregar Usuario", command=agregar_usuario)
     btn_agregar_usuario.grid(row=4, column=1, padx=10, pady=10)
 
 #Ventana para hacer prestamo
@@ -141,20 +148,20 @@ def prestamo():
     prestamo.geometry("300x200+600+300")
 
     #Crear etiqueta titulo
-    title_label = Label(prestamo, text = "Favor de ingresar \nel nombre y apellido del alumno", font=("Helvetica"))
-    title_label.grid(row = 0, column = 0, columnspan = 2, pady = '10')
+    title_label = ttk.Label(prestamo, text = "Favor de ingresar \nel nombre y apellido del alumno", font=("Helvetica"))
+    title_label.grid(row = 0, column = 0, columnspan = 2, pady = 10 , padx = 30)
 
     #formulario
     lbl_primer_nombre = Label(prestamo, text="Nombre").grid(row=1, column=0, sticky=W, padx=10)
     lbl_apellido = Label(prestamo, text="Apellido").grid(row=2, column=0, sticky=W, padx=10)
 
-    tb_primer_nombre = Entry(prestamo)
+    tb_primer_nombre = ttk.Entry(prestamo)
     tb_primer_nombre.grid(row=1, column=1, pady=5)
 
-    tb_apellido = Entry(prestamo)
+    tb_apellido = ttk.Entry(prestamo)
     tb_apellido.grid(row=2, column=1, pady=5)
 
-    btn_agregar_usuario = Button(prestamo, text="Aceptar", command=buscar_usuario)
+    btn_agregar_usuario = ttk.Button(prestamo, text="Aceptar", command=buscar_usuario)
     btn_agregar_usuario.grid(row=4, column=1, padx=10, pady=10)
 
 def devolver():
@@ -186,22 +193,24 @@ def devolver():
 
 #Etiqueta "Bienvenido"
 var = StringVar()
-welcome = Label(root, textvariable=var, relief = FLAT)
+welcome = Label(root, textvariable=var, relief = FLAT, bg="white")
 var.set("Bienvenido")
 welcome.grid(row=0, column=0, padx=10, pady=10)
 
-bottom_frame = Frame(root, width=650, height=400, bg='lightblue')
-bottom_frame.grid(row=1, column=0, padx=10, pady=5, )
+bottom_frame = Frame(root, width=650, height=400, bg="white")
+bottom_frame.grid(row=1, column=0, padx=10, pady=5)
 
-prestamo_btn = Button(bottom_frame, text = "Prestar", command=prestamo)
-prestamo_btn.grid(row=1, column=0, padx=10, pady=10, ipadx=27)
+prestamo_btn = ttk.Button(bottom_frame, text = "Prestar", command=prestamo)
+prestamo_btn.grid(row=1, column=0, padx=10, pady=10, ipadx=15)
 
-devolucion_btn = Button(bottom_frame, text = "Devolver", command=devolver)
-devolucion_btn.grid(row=1, column=1, padx=10, pady=10, ipadx=27)
+devolucion_btn = ttk.Button(bottom_frame, text = "Devolver", command=devolver)
+devolucion_btn.grid(row=1, column=1, padx=10, pady=10, ipadx=15)
 
-registro_btn = Button(bottom_frame, text = "Registrar Alumno", command=open_registro)
-registro_btn.grid(row=2, column=0, padx=10, pady=10)
+registro_btn = ttk.Button(bottom_frame, text = "Registrar Alumno", command=open_registro)
+registro_btn.grid(row=2, column=0, padx=10, pady=10, ipadx=1)
 
+pendientes_btn = ttk.Button(bottom_frame, text = "Pendientes")
+pendientes_btn.grid(row=2, column=1, padx=10, pady=10, ipadx=15)
 
 
 
