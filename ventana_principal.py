@@ -19,6 +19,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 #abrir ventana en el centro
+
 def centrar_ventana(ventana):
     windowWidth = ventana.winfo_reqwidth()
     windowHeight = ventana.winfo_reqheight()
@@ -28,7 +29,7 @@ def centrar_ventana(ventana):
 
 root = ThemedTk(theme="breeze")
 root.title("Biblioteca Parra")
-root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='book.png'))
+#root.tk.call('wm', 'iconphoto', root._w, PhotoImage(file='book.png'))
 root.geometry("305x200")
 root.config(bg="white")
 centrar_ventana(root)
@@ -63,7 +64,7 @@ def open_registro():
 
     registro = Toplevel()
     registro.title("Registrar Alumno")
-    registro.tk.call('wm', 'iconphoto', registro._w, PhotoImage(file='book.png'))
+    #registro.tk.call('wm', 'iconphoto', registro._w, PhotoImage(file='book.png'))
     registro.geometry("350x250+600+300")
     #centrar_ventana(registro)
 
@@ -144,7 +145,7 @@ def prestamo():
 
     prestamo = Toplevel()
     prestamo.title("Prestar libro")
-    prestamo.tk.call('wm', 'iconphoto', prestamo._w, PhotoImage(file='book.png'))
+    #prestamo.tk.call('wm', 'iconphoto', prestamo._w, PhotoImage(file='book.png'))
     prestamo.geometry("300x200+600+300")
 
     #Crear etiqueta titulo
@@ -163,6 +164,8 @@ def prestamo():
 
     btn_agregar_usuario = ttk.Button(prestamo, text="Aceptar", command=buscar_usuario)
     btn_agregar_usuario.grid(row=4, column=1, padx=10, pady=10)
+
+
 
 def devolver():
     #conectandome a la base de datos
@@ -188,8 +191,104 @@ def devolver():
     mydb.commit()
 
     messagebox.showinfo("Listo", "Prestamo finalizado")
-    
 
+def pendiente():
+    #conectandome a la base de datos
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="bibliotecaparra"
+    )
+
+    mycursor = mydb.cursor()
+
+    #abre la ventana de los libros prestados
+    pendiente = Toplevel()
+    pendiente.title("Pendientes")
+    #prestamo.tk.call('wm', 'iconphoto', prestamo._w, PhotoImage(file='book.png'))
+    pendiente.geometry("450x600+600+100")
+
+    #lbl_pendientes = Label(pendiente, text="Hola").grid(row=0, column=0)
+
+    mycursor.execute("""SELECT Nombre, Apellido, Titulo, FechaPedido, FechaEntrega, prestamos.Estado FROM prestamos 
+	                    JOIN usuarios ON prestamos.idUsuario = usuarios.idUsuario
+                        JOIN libros ON prestamos.idLibro = libros.idLibro 
+                        WHERE prestamos.Estado = 'Pendiente' """)
+    result = mycursor.fetchall()
+   
+    for index, x in enumerate(result):
+        num=0
+        for y in x:
+            lookup_label = Label(pendiente, text=y)
+            lookup_label.grid(row=index, column=num)
+            num+=1
+
+def buscar_libro():
+    buscar_libro=Tk()
+    buscar_libro.title("Buscar libro")
+    #registro.tk.call('wm', 'iconphoto', registro._w, PhotoImage(file='book.png'))
+    buscar_libro.geometry("450x300+600+300")
+    #centrar_ventana(registro)
+    w = Canvas(buscar_libro, width=400, height=100, bg='blue')
+    w.grid(row=4, column=0, columnspan=4)
+    
+    def buscar_ahora():
+        selected = drop.get()
+        if selected == "Titulo":
+            sql = "SELECT * FROM libros WHERE Titulo = %s"
+        if selected == "Autor":
+            sql = "SELECT * FROM libros WHERE Autor = %s"
+
+        
+        busqueda = buscar_libros.get()
+        #sql = "SELECT * FROM libros WHERE Titulo = %s"
+        nombre = (busqueda,)
+        resultado = mycursor.execute(sql, nombre)
+        resultado = mycursor.fetchall()
+
+        if not resultado:
+            resultado = "No encontro el libro"
+
+        for index, x in enumerate(resultado):
+            num=0
+            index += 2
+            for y in x:
+                busqueda_label = Label(w, text=y)
+                busqueda_label.grid(row=index, column=num)
+                num+=1
+
+        #busqueda_label = Label(buscar_libro, text=resultado)
+        #busqueda_label.grid(row=3, column=0, padx=10, columnspan=2)
+        
+
+    #caja de busqueda para buscar libros
+    buscar_libros = Entry(buscar_libro)
+    buscar_libros.grid(row = 0, column = 1, padx=10, pady=10)
+    #caja de busqueda label
+    buscar_libro_label = Label(buscar_libro, text="Buscar libros por titulo: ")
+    buscar_libro_label.grid(row=0, column=0, padx=10, pady=10)
+    #caja de entrada de busqueda
+    buscar_boton = Button(buscar_libro, text = "Buscar libro", command=buscar_ahora)
+    buscar_boton.grid(row=1, column=0, padx=10)
+    #Drop down box
+    drop = ttk.Combobox(buscar_libro, value =["Titulo","Autor"])
+    drop.current(0)
+    drop.grid(row=0, column=2,)
+
+def libros():
+    #conectandome a la base de datos
+    mydb = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        passwd="root",
+        database="bibliotecaparra"
+    )
+
+    mycursor = mydb.cursor()
+
+    #abre la ventana de "libros"
+    
 
 #Etiqueta "Bienvenido"
 var = StringVar()
@@ -209,8 +308,13 @@ devolucion_btn.grid(row=1, column=1, padx=10, pady=10, ipadx=15)
 registro_btn = ttk.Button(bottom_frame, text = "Registrar Alumno", command=open_registro)
 registro_btn.grid(row=2, column=0, padx=10, pady=10, ipadx=1)
 
-pendientes_btn = ttk.Button(bottom_frame, text = "Pendientes")
+pendientes_btn = ttk.Button(bottom_frame, text = "Pendientes", command=pendiente)
 pendientes_btn.grid(row=2, column=1, padx=10, pady=10, ipadx=15)
+
+libros_btn = ttk.Button(bottom_frame, text = "Libros",command=buscar_libro)
+libros_btn.grid(row=3, column=0, padx=10, pady=10, ipadx=15)
+
+
 
 
 
